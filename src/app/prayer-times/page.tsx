@@ -9,6 +9,7 @@ import prayerData from "@/data/prayerTimes";
 import { City } from "@/data/prayerTimes";
 import dynamic from "next/dynamic";
 import { Settings as SettingsIcon, Clock, MapPin } from "lucide-react";
+import translations from "@/data/translations";
 
 // Dynamically import components with client-side rendering
 const Header = dynamic(() => import("@/components/Header"), { ssr: false });
@@ -22,17 +23,21 @@ moment.tz.setDefault("Asia/Dhaka");
 
 export default function PrayerTimesPage() {
   const [selectedCity, setSelectedCity] = useState<City>(prayerData.cities[0]);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesType>({
     fajr: "",
     sunrise: "",
     dhuhr: "",
     asr: "",
     maghrib: "",
-    isha: ""
+    isha: "",
+    sehri: "",
+    iftar: ""
   });
   const [currentPrayerInfo, setCurrentPrayerInfo] = useState<PrayerInfo>({
     current: "",
-    next: ""
+    next: "",
+    isBeforeIftar: true
   });
   const [showSettings, setShowSettings] = useState(false);
   const [currentTime, setCurrentTime] = useState(moment().format("HH:mm:ss"));
@@ -65,6 +70,10 @@ export default function PrayerTimesPage() {
     }
   };
 
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+  };
+
   return (
     <div className="h-screen overflow-y-auto overflow-x-hidden">
       <motion.div 
@@ -93,8 +102,10 @@ export default function PrayerTimesPage() {
           <CurrentTime
             city={selectedCity.name}
             country={selectedCity.country}
-            currentPrayer={currentPrayerInfo.current || "Waiting"}
-            currentTime={currentTime}
+            sehriTime={prayerTimes.sehri}
+            iftarTime={prayerTimes.iftar}
+            isBeforeIftar={currentPrayerInfo.isBeforeIftar}
+            translations={translations[selectedLanguage]}
           />
 
           <NextPrayer
@@ -107,6 +118,7 @@ export default function PrayerTimesPage() {
           <PrayerList
             prayerTimes={prayerTimes}
             currentPrayer={currentPrayerInfo.current}
+            translations={translations[selectedLanguage]}
           />
         </div>
 
@@ -118,6 +130,9 @@ export default function PrayerTimesPage() {
               cities={prayerData.cities}
               selectedCity={selectedCity.name}
               onCityChange={handleCityChange}
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={handleLanguageChange}
+              translations={translations[selectedLanguage]}
             />
           )}
         </AnimatePresence>

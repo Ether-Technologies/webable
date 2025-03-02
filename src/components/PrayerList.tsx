@@ -3,20 +3,26 @@
 import React from "react";
 import { PrayerTimesType } from "@/utils/prayerCalculations";
 import { Sunrise, Sun, Sunset, Moon } from "lucide-react";
+import { Translation } from "@/data/translations";
+import moment from "moment";
 
 interface PrayerItemProps {
   name: string;
   time: string;
   icon: React.ReactNode;
   active: boolean;
+  translations: Translation;
 }
 
 const PrayerItem: React.FC<PrayerItemProps> = ({ 
   name, 
   time, 
   icon, 
-  active
+  active,
+  translations
 }) => {
+  const translatedName = translations.prayerNames[name.toLowerCase()];
+  
   return (
     <div 
       className={`mb-4 p-6 rounded-2xl ${
@@ -31,7 +37,7 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
         </div>
         
         <div className="text-center">
-          <div className="text-2xl font-bold">{name}</div>
+          <div className="text-2xl font-bold">{translatedName}</div>
         </div>
         
         <div className="text-right">
@@ -49,9 +55,12 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
 interface PrayerListProps {
   prayerTimes: PrayerTimesType;
   currentPrayer: string;
+  translations: Translation;
 }
 
-const PrayerList: React.FC<PrayerListProps> = ({ prayerTimes, currentPrayer }) => {
+const PrayerList: React.FC<PrayerListProps> = ({ prayerTimes, currentPrayer, translations }) => {
+  const now = moment();
+  
   const prayers = [
     { name: "Fajr", icon: <Sunrise />, time: prayerTimes.fajr },
     { name: "Dhuhr", icon: <Sun />, time: prayerTimes.dhuhr },
@@ -60,23 +69,33 @@ const PrayerList: React.FC<PrayerListProps> = ({ prayerTimes, currentPrayer }) =
     { name: "Isha", icon: <Moon />, time: prayerTimes.isha }
   ];
 
+  // Filter out past prayers based on current prayer
+  const currentPrayerIndex = prayers.findIndex(p => p.name === currentPrayer);
+  const futurePrayers = prayers.filter((_, index) => {
+    if (currentPrayer === "Isha") {
+      return true; // Show all prayers after Isha for next day
+    }
+    return index >= currentPrayerIndex - 1; // Show current prayer and future prayers
+  });
+
   return (
     <div className="px-4 py-6 bg-gray-100 rounded-3xl mt-2 w-full">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Prayer Times</h2>
+        <h2 className="text-2xl font-bold text-gray-800">{translations.ui.prayerTimes}</h2>
         <div className="text-lg font-medium text-emerald-800">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long' })}
+          {translations.ui.today}
         </div>
       </div>
       
       <div>
-        {prayers.map((prayer) => (
+        {futurePrayers.map((prayer) => (
           <PrayerItem
             key={prayer.name}
             name={prayer.name}
             time={prayer.time || ""}
             icon={prayer.icon}
             active={prayer.name === currentPrayer}
+            translations={translations}
           />
         ))}
       </div>

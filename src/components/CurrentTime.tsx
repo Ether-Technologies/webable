@@ -2,21 +2,31 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Clock, MapPin } from "lucide-react";
+import { MapPin, Sunrise, Sunset } from "lucide-react";
+import { Translation } from "@/data/translations";
 
 interface CurrentTimeProps {
   city: string;
   country: string;
-  currentPrayer: string;
-  currentTime: string;
+  sehriTime: string;
+  iftarTime: string;
+  isBeforeIftar: boolean;
+  translations: Translation;
 }
 
 const CurrentTime: React.FC<CurrentTimeProps> = ({ 
   city, 
   country, 
-  currentPrayer,
-  currentTime 
+  sehriTime,
+  iftarTime,
+  isBeforeIftar,
+  translations
 }) => {
+  const mainTime = isBeforeIftar ? iftarTime : sehriTime;
+  const secondaryTime = isBeforeIftar ? sehriTime : iftarTime;
+  const mainLabel = isBeforeIftar ? translations.prayerNames.iftar : translations.prayerNames.sehri;
+  const secondaryLabel = isBeforeIftar ? translations.prayerNames.sehri : translations.prayerNames.iftar;
+
   return (
     <motion.div 
       initial={{ y: 20, opacity: 0 }}
@@ -31,20 +41,29 @@ const CurrentTime: React.FC<CurrentTimeProps> = ({
       
       <motion.div 
         className="text-6xl font-bold text-white flex items-center"
-        key={currentTime}
+        key={mainTime}
       >
-        <Clock size={24} className="mr-2" />
-        {currentTime.substring(0, 5)}
-        <span className="text-2xl ml-1">{currentTime.substring(6, 8)}</span>
+        {isBeforeIftar ? <Sunset size={36} className="mr-2 text-orange-400" /> : <Sunrise size={36} className="mr-2 text-yellow-400" />}
+        {mainTime}
       </motion.div>
       
       <motion.div 
-        className="bg-red-600 text-white px-4 py-1 rounded-full mt-3 text-sm flex items-center"
+        className="bg-emerald-600 text-white px-4 py-1 rounded-full mt-3 text-sm flex items-center"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        
       >
-        {currentPrayer} Time
+        {mainLabel}
+      </motion.div>
+
+      <motion.div 
+        className="mt-4 text-white/80 text-sm flex items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <span className="mr-2">{translations.ui.today}</span>
+        {isBeforeIftar ? <Sunrise size={14} className="mr-1 text-yellow-400" /> : <Sunset size={14} className="mr-1 text-orange-400" />}
+        <span>{secondaryLabel}: {secondaryTime}</span>
       </motion.div>
     </motion.div>
   );

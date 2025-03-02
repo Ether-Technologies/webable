@@ -8,6 +8,8 @@ export interface PrayerTimesType {
   asr: string;
   maghrib: string;
   isha: string;
+  sehri: string;
+  iftar: string;
 }
 
 export interface PrayerInfo {
@@ -15,6 +17,7 @@ export interface PrayerInfo {
   next: string;
   nextTime?: moment.Moment;
   timeRemaining?: moment.Duration;
+  isBeforeIftar: boolean;
 }
 
 export const getPrayerTimes = (latitude: number, longitude: number, date: Date = new Date()): PrayerTimesType => {
@@ -25,13 +28,20 @@ export const getPrayerTimes = (latitude: number, longitude: number, date: Date =
   
   const prayerTimes = new PrayerTimes(coordinates, date, params);
   
+  // Sehri time is 10 minutes before Fajr
+  const sehriTime = moment(prayerTimes.fajr).subtract(10, 'minutes');
+  // Iftar time is same as Maghrib
+  const iftarTime = moment(prayerTimes.maghrib);
+  
   return {
     fajr: moment(prayerTimes.fajr).format("HH:mm"),
     sunrise: moment(prayerTimes.sunrise).format("HH:mm"),
     dhuhr: moment(prayerTimes.dhuhr).format("HH:mm"),
     asr: moment(prayerTimes.asr).format("HH:mm"),
     maghrib: moment(prayerTimes.maghrib).format("HH:mm"),
-    isha: moment(prayerTimes.isha).format("HH:mm")
+    isha: moment(prayerTimes.isha).format("HH:mm"),
+    sehri: sehriTime.format("HH:mm"),
+    iftar: iftarTime.format("HH:mm")
   };
 };
 
@@ -45,6 +55,9 @@ export const getCurrentPrayer = (prayerTimes: PrayerTimesType): PrayerInfo => {
     { name: "Isha", time: moment(prayerTimes.isha, "HH:mm") }
   ];
 
+  const iftarTime = moment(prayerTimes.iftar, "HH:mm");
+  const isBeforeIftar = now.isBefore(iftarTime);
+
   // Find the next prayer
   for (let i = 0; i < prayers.length; i++) {
     if (now.isBefore(prayers[i].time)) {
@@ -52,7 +65,8 @@ export const getCurrentPrayer = (prayerTimes: PrayerTimesType): PrayerInfo => {
         current: i === 0 ? prayers[prayers.length - 1].name : prayers[i - 1].name,
         next: prayers[i].name,
         nextTime: prayers[i].time,
-        timeRemaining: moment.duration(prayers[i].time.diff(now))
+        timeRemaining: moment.duration(prayers[i].time.diff(now)),
+        isBeforeIftar
       };
     }
   }
@@ -62,7 +76,8 @@ export const getCurrentPrayer = (prayerTimes: PrayerTimesType): PrayerInfo => {
     current: prayers[prayers.length - 1].name,
     next: prayers[0].name,
     nextTime: prayers[0].time.add(1, "day"),
-    timeRemaining: moment.duration(prayers[0].time.add(1, "day").diff(now))
+    timeRemaining: moment.duration(prayers[0].time.add(1, "day").diff(now)),
+    isBeforeIftar
   };
 };
 
