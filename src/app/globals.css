@@ -5,19 +5,35 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #059669;
+  --primary-light: #10b981;
+  --primary-dark: #047857;
+  --primary-transparent: rgba(5, 150, 105, 0.9);
+  --secondary: #fcb813;
+  --secondary-light: #fdc533;
+  --secondary-dark: #e6a50c;
+  --surface: #ffffff;
+  --surface-transparent: rgba(255, 255, 255, 0.9);
+  --text-primary: #171717;
+  --text-secondary: #4b5563;
+  --text-on-primary: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --surface: #1f2937;
+    --surface-transparent: rgba(31, 41, 55, 0.9);
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
 }
 
 @layer utilities {
@@ -28,9 +44,29 @@ body {
   .bg-radial-gradient {
     background: radial-gradient(
       circle,
-      rgba(39, 174, 96, 0.8) 0%,
+      var(--primary-transparent) 0%,
       rgba(30, 130, 76, 0) 70%
     );
+  }
+
+  .bg-primary-gradient {
+    background: linear-gradient(
+      to right,
+      var(--primary) 0%,
+      var(--primary-light) 100%
+    );
+  }
+
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-secondary {
+    color: var(--secondary);
   }
 }
 

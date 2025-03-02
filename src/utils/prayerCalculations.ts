@@ -1,15 +1,16 @@
 import { PrayerTimes, Coordinates, CalculationMethod, Madhab } from "adhan";
 import moment from "moment";
 
+export type PrayerName = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+
 export interface PrayerTimesType {
+  [key: string]: string;
   fajr: string;
   sunrise: string;
   dhuhr: string;
   asr: string;
   maghrib: string;
   isha: string;
-  sehri: string;
-  iftar: string;
 }
 
 export interface PrayerInfo {
@@ -89,4 +90,17 @@ export const formatTimeRemaining = (duration?: moment.Duration): string => {
   const seconds = duration.seconds().toString().padStart(2, "0");
   
   return `${hours}:${minutes}:${seconds}`;
+};
+
+export const calculatePrayerTimes = (): PrayerTimesType => {
+  // This is a placeholder implementation
+  // In a real application, this would calculate prayer times based on location and date
+  return {
+    fajr: '04:15',
+    sunrise: '05:45',
+    dhuhr: '12:15',
+    asr: '16:30',
+    maghrib: '18:45',
+    isha: '20:15'
+  };
 }; 

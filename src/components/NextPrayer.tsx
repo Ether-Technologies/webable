@@ -1,92 +1,42 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import moment from "moment";
+import { AlertCircle } from "lucide-react";
 import { PrayerTimesType } from "@/utils/prayerCalculations";
-import { Sunrise, Sunset, Sun, Moon, Clock, AlertCircle } from "lucide-react";
+import { Duration } from "moment";
+import { Translation } from "@/data/translations";
+import { formatTime, convertToBengaliNumerals } from "@/utils/formatters";
 
 interface NextPrayerProps {
   currentPrayer: string;
   nextPrayer: string;
   prayerTimes: PrayerTimesType;
-  timeRemaining?: moment.Duration;
+  timeRemaining?: Duration;
+  translations: Translation;
+  language: string;
 }
 
-const NextPrayer: React.FC<NextPrayerProps> = ({ 
-  currentPrayer, 
-  nextPrayer, 
+const NextPrayer: React.FC<NextPrayerProps> = ({
+  currentPrayer,
+  nextPrayer,
   prayerTimes,
-  timeRemaining 
+  timeRemaining,
+  translations,
+  language
 }) => {
-  const [hours, setHours] = useState("00");
-  const [minutes, setMinutes] = useState("00");
-  const [seconds, setSeconds] = useState("00");
-  const [progress, setProgress] = useState(100);
+  if (!timeRemaining) return null;
 
-  useEffect(() => {
-    const updateCountdown = () => {
-      // Calculate time remaining directly
-      const now = moment();
-      let nextTime;
-      
-      if (prayerTimes[nextPrayer.toLowerCase() as keyof PrayerTimesType]) {
-        nextTime = moment(prayerTimes[nextPrayer.toLowerCase() as keyof PrayerTimesType], "HH:mm");
-        
-        // If next prayer is tomorrow (e.g., current prayer is Isha and next is Fajr)
-        if (now.isAfter(nextTime)) {
-          nextTime.add(1, 'day');
-        }
-        
-        const diff = moment.duration(nextTime.diff(now));
-        
-        // Update countdown values
-        setHours(Math.floor(diff.asHours()).toString().padStart(2, '0'));
-        setMinutes(diff.minutes().toString().padStart(2, '0'));
-        setSeconds(diff.seconds().toString().padStart(2, '0'));
-        
-        // Calculate progress percentage
-        const totalSeconds = diff.asSeconds();
-        const maxSeconds = 5 * 60 * 60; // 5 hours max
-        const percentage = Math.min(100, (totalSeconds / maxSeconds) * 100);
-        setProgress(percentage);
-      }
-    };
-
-    // Initial update
-    updateCountdown();
-    
-    // Update every second
-    const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, [nextPrayer, prayerTimes]);
-
-  const getIcon = (prayer: string) => {
-    switch (prayer) {
-      case "Fajr":
-        return <Sunrise className="text-yellow-300" />;
-      case "Dhuhr":
-        return <Sun className="text-yellow-500" />;
-      case "Asr":
-        return <Sun className="text-orange-400" />;
-      case "Maghrib":
-        return <Sunset className="text-orange-600" />;
-      case "Isha":
-        return <Moon className="text-blue-200" />;
-      default:
-        return <Clock />;
-    }
+  const formatNumber = (num: number): string => {
+    const formatted = num.toString().padStart(2, '0');
+    return language === 'bn' ? convertToBengaliNumerals(formatted) : formatted;
   };
 
-  const getCurrentPrayerTime = (): string => {
-    const key = currentPrayer.toLowerCase() as keyof PrayerTimesType;
-    return prayerTimes[key] || "";
-  };
+  const hours = Math.floor(timeRemaining.asHours());
+  const minutes = timeRemaining.minutes();
+  const seconds = timeRemaining.seconds();
 
-  const getNextPrayerTime = (): string => {
-    const key = nextPrayer.toLowerCase() as keyof PrayerTimesType;
-    return prayerTimes[key] || "";
-  };
+  const progress = ((hours * 3600 + minutes * 60 + seconds) / (24 * 3600)) * 100;
 
   return (
     <motion.div 
@@ -96,62 +46,54 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
       className="mx-4 mb-4"
     >
       {/* Progress bar */}
-      <div className="relative h-1 bg-emerald-900/30 rounded-full mb-4 overflow-hidden">
+      <div className="relative h-1 bg-primary-dark/30 rounded-full mb-4 overflow-hidden">
         <motion.div 
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-300"
+          className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary-light"
           style={{ width: `${progress}%` }}
           transition={{ duration: 0.5 }}
         />
       </div>
 
-      <div className="flex justify-between items-center p-4 text-white bg-emerald-800/50 rounded-lg shadow-lg">
+      <div className="flex justify-between items-center p-4 text-on-primary bg-primary-dark/50 rounded-lg shadow-lg backdrop-blur-sm">
         <div className="flex items-center">
-          <div className="mr-3 p-2 bg-emerald-900/50 rounded-full">
-            {getIcon(currentPrayer)}
+          <div className="mr-3 p-2 bg-primary-dark/50 rounded-full">
+            <AlertCircle className="text-secondary" size={24} />
           </div>
           <div>
-            <div className="font-medium">{currentPrayer}</div>
-            <div className="text-sm opacity-80">{getCurrentPrayerTime()}</div>
+            <div className="font-medium">{translations.prayerNames[nextPrayer.toLowerCase()]}</div>
+            <div className="text-sm opacity-80">
+              {formatTime(prayerTimes[nextPrayer.toLowerCase() as keyof PrayerTimesType], language)}
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col items-center">
           <div className="text-xs mb-1 flex items-center">
             <AlertCircle size={12} className="mr-1" />
-            <span>Next Prayer In</span>
+            <span>{translations.ui.timeRemaining}</span>
           </div>
           
           <div className="flex items-center justify-center gap-1">
             <div className="flex flex-col items-center">
-              <div className="bg-emerald-900/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
-                {hours}
+              <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
+                {formatNumber(hours)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1">HRS</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">HRS</div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
-              <div className="bg-emerald-900/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
-                {minutes}
+              <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
+                {formatNumber(minutes)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1">MIN</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">MIN</div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
-              <div className="bg-emerald-900/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
-                {seconds}
+              <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
+                {formatNumber(seconds)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1">SEC</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">SEC</div>
             </div>
-          </div>
-        </div>
-
-        <div className="flex items-center">
-          <div className="text-right">
-            <div className="font-medium">{nextPrayer}</div>
-            <div className="text-sm opacity-80">{getNextPrayerTime()}</div>
-          </div>
-          <div className="ml-3 p-2 bg-emerald-900/50 rounded-full">
-            {getIcon(nextPrayer)}
           </div>
         </div>
       </div>

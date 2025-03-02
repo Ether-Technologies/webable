@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import moment from "moment";
 import "moment-timezone";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { getPrayerTimes, getCurrentPrayer, PrayerTimesType, PrayerInfo } from "@/utils/prayerCalculations";
 import prayerData from "@/data/prayerTimes";
 import { City } from "@/data/prayerTimes";
@@ -12,20 +13,22 @@ import { Settings as SettingsIcon } from "lucide-react";
 import translations from "@/data/translations";
 import { loadSettings, saveSettings, AppSettings } from "@/utils/storage";
 import { requestNotificationPermission, scheduleNotification } from "@/utils/notifications";
+import { formatTime } from "@/utils/formatters";
+import { useSettings } from "@/hooks/useSettings";
+import PrayerList from "@/components/PrayerList";
+import NextPrayer from "@/components/NextPrayer";
+import CurrentTime from "@/components/CurrentTime";
+import Settings from "@/components/Settings";
+import { calculatePrayerTimes } from "@/utils/prayerCalculations";
 
 // Dynamically import components
 const Header = dynamic(() => import("@/components/Header"), { ssr: false });
-const CurrentTime = dynamic(() => import("@/components/CurrentTime"), { ssr: false });
-const NextPrayer = dynamic(() => import("@/components/NextPrayer"), { ssr: false });
-const PrayerList = dynamic(() => import("@/components/PrayerList"), { ssr: false });
-const Settings = dynamic(() => import("@/components/Settings"), { ssr: false });
 
 // Set timezone to Bangladesh
 moment.tz.setDefault("Asia/Dhaka");
 
 export default function PrayerTimesPage() {
-  // Load settings from localStorage
-  const [settings, setSettings] = useState<AppSettings>(loadSettings());
+  const { settings, updateSettings } = useSettings();
   const [selectedCity, setSelectedCity] = useState<City>(
     prayerData.cities.find(c => c.name === settings.city) || prayerData.cities[0]
   );
@@ -105,6 +108,64 @@ export default function PrayerTimesPage() {
     return () => clearInterval(timer);
   }, [selectedCity.name, settings.notifications, selectedLanguage]);
 
+  useEffect(() => {
+    const updateCurrentAndNextPrayer = () => {
+      const now = moment();
+      const prayers = Object.entries(prayerTimes);
+      
+      let current = "";
+      let next = "";
+      
+      for (let i = 0; i < prayers.length; i++) {
+        const [prayer, time] = prayers[i];
+        const prayerTime = moment(time, "HH:mm");
+        
+        if (now.isBefore(prayerTime)) {
+          current = i === 0 ? prayers[prayers.length - 1][0] : prayers[i - 1][0];
+          next = prayer;
+          break;
+        }
+      }
+      
+      if (!next) {
+        current = prayers[prayers.length - 1][0];
+        next = prayers[0][0];
+      }
+
+      setCurrentPrayerInfo({
+        current,
+        next,
+        isBeforeIftar: currentPrayerInfo.isBeforeIftar
+      });
+    };
+
+    const updateTimeRemaining = () => {
+      if (!currentPrayerInfo.next || !prayerTimes[currentPrayerInfo.next.toLowerCase()]) return;
+
+      const now = moment();
+      let nextTime = moment(prayerTimes[currentPrayerInfo.next.toLowerCase()], "HH:mm");
+
+      if (now.isAfter(nextTime)) {
+        nextTime.add(1, 'day');
+      }
+
+      setCurrentPrayerInfo({
+        ...currentPrayerInfo,
+        timeRemaining: moment.duration(nextTime.diff(now))
+      });
+    };
+
+    updateCurrentAndNextPrayer();
+    updateTimeRemaining();
+
+    const timer = setInterval(() => {
+      updateCurrentAndNextPrayer();
+      updateTimeRemaining();
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [prayerTimes, currentPrayerInfo.next]);
+
   const handleCityChange = (cityName: string) => {
     const city = prayerData.cities.find((c) => c.name === cityName);
     if (city) {
@@ -117,10 +178,10 @@ export default function PrayerTimesPage() {
   };
 
   const handleNotificationSettingsChange = (notificationSettings: AppSettings['notifications']) => {
-    setSettings(prev => ({
-      ...prev,
+    updateSettings({
+      ...settings,
       notifications: notificationSettings
-    }));
+    });
   };
 
   return (
@@ -128,7 +189,7 @@ export default function PrayerTimesPage() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="max-w-md mx-auto min-h-screen flex flex-col bg-emerald-700 relative pb-6 overflow-hidden"
+        className="max-w-md mx-auto min-h-screen flex flex-col bg-primary relative pb-6 overflow-hidden"
       >
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
@@ -151,8 +212,8 @@ export default function PrayerTimesPage() {
           <CurrentTime
             city={selectedCity.name}
             country={selectedCity.country}
-            sehriTime={prayerTimes.sehri}
-            iftarTime={prayerTimes.iftar}
+            sehriTime={formatTime(prayerTimes.sehri, selectedLanguage)}
+            iftarTime={formatTime(prayerTimes.iftar, selectedLanguage)}
             isBeforeIftar={currentPrayerInfo.isBeforeIftar}
             translations={translations[selectedLanguage]}
           />
@@ -162,12 +223,15 @@ export default function PrayerTimesPage() {
             nextPrayer={currentPrayerInfo.next || "Dhuhr"}
             prayerTimes={prayerTimes}
             timeRemaining={currentPrayerInfo.timeRemaining}
+            translations={translations[selectedLanguage]}
+            language={selectedLanguage}
           />
 
           <PrayerList
             prayerTimes={prayerTimes}
             currentPrayer={currentPrayerInfo.current}
             translations={translations[selectedLanguage]}
+            language={selectedLanguage}
           />
         </div>
 
