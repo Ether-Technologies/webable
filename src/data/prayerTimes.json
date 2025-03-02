@@ -1,0 +1,25 @@
+{
+    "cities": [
+        {
+            "name": "Ankara",
+            "country": "Türkiye",
+            "latitude": 39.9334,
+            "longitude": 32.8597,
+            "timezone": "Europe/Istanbul"
+        },
+        {
+            "name": "Istanbul",
+            "country": "Türkiye",
+            "latitude": 41.0082,
+            "longitude": 28.9784,
+            "timezone": "Europe/Istanbul"
+        },
+        {
+            "name": "Mecca",
+            "country": "Saudi Arabia",
+            "latitude": 21.4225,
+            "longitude": 39.8262,
+            "timezone": "Asia/Riyadh"
+        }
+    ]
+}
