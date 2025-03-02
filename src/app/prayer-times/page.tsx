@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 import "moment-timezone";
-import { AnimatePresence } from "framer-motion";
 import { getPrayerTimes, getCurrentPrayer, PrayerTimesType, PrayerInfo } from "@/utils/prayerCalculations";
 import prayerData from "@/data/prayerTimes";
 import { City } from "@/data/prayerTimes";
@@ -21,18 +20,19 @@ import CurrentTime from "@/components/CurrentTime";
 import Settings from "@/components/Settings";
 import { calculatePrayerTimes } from "@/utils/prayerCalculations";
 
-// Dynamically import components
+// Dynamically import components with ssr disabled
 const Header = dynamic(() => import("@/components/Header"), { ssr: false });
 
 // Set timezone to Bangladesh
 moment.tz.setDefault("Asia/Dhaka");
 
-export default function PrayerTimesPage() {
+function PrayerTimesPage() {
   const { settings, updateSettings } = useSettings();
   const [selectedCity, setSelectedCity] = useState<City>(
     prayerData.cities.find(c => c.name === settings.city) || prayerData.cities[0]
   );
   const [selectedLanguage, setSelectedLanguage] = useState(settings.language);
+  const [mounted, setMounted] = useState(false);
   
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesType>({
     fajr: "",
@@ -51,22 +51,32 @@ export default function PrayerTimesPage() {
   });
   const [showSettings, setShowSettings] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Request notification permission on mount
   useEffect(() => {
-    requestNotificationPermission();
-  }, []);
+    if (mounted) {
+      requestNotificationPermission();
+    }
+  }, [mounted]);
 
   // Update settings when they change
   useEffect(() => {
-    saveSettings({
-      city: selectedCity.name,
-      language: selectedLanguage,
-      notifications: settings.notifications,
-      theme: settings.theme
-    });
-  }, [selectedCity.name, selectedLanguage, settings.notifications, settings.theme]);
+    if (mounted) {
+      saveSettings({
+        city: selectedCity.name,
+        language: selectedLanguage,
+        notifications: settings.notifications,
+        theme: settings.theme
+      });
+    }
+  }, [mounted, selectedCity.name, selectedLanguage, settings.notifications, settings.theme]);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const city =
       prayerData.cities.find((c) => c.name === selectedCity.name) ||
       prayerData.cities[0];
@@ -106,7 +116,7 @@ export default function PrayerTimesPage() {
     const timer = setInterval(updatePrayerTimes, 1000);
 
     return () => clearInterval(timer);
-  }, [selectedCity.name, settings.notifications, selectedLanguage]);
+  }, [mounted, selectedCity.name, settings.notifications, selectedLanguage]);
 
   useEffect(() => {
     const updateCurrentAndNextPrayer = () => {
@@ -184,10 +194,14 @@ export default function PrayerTimesPage() {
     });
   };
 
+  if (!mounted) {
+    return null; // or a loading state
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-dark/20 to-primary-darker/20">
       <div className="container mx-auto px-4 py-8 lg:grid lg:grid-cols-2 lg:gap-8 lg:py-12 lg:min-h-screen lg:items-center">
-        {/* Main Prayer App Container - Mobile full width, Desktop left column */}
+        {/* Main Prayer App Container */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -209,9 +223,7 @@ export default function PrayerTimesPage() {
           </div>
           
           <div className="relative z-10 flex-1 flex flex-col">
-            {/* Show Header on both mobile and desktop */}
             <Header onSettingsClick={() => setShowSettings(true)} />
-
             <CurrentTime
               city={selectedCity.name}
               country={selectedCity.country}
@@ -220,7 +232,6 @@ export default function PrayerTimesPage() {
               isBeforeIftar={currentPrayerInfo.isBeforeIftar}
               translations={translations[selectedLanguage]}
             />
-
             <NextPrayer
               currentPrayer={currentPrayerInfo.current || "Fajr"}
               nextPrayer={currentPrayerInfo.next || "Dhuhr"}
@@ -232,7 +243,7 @@ export default function PrayerTimesPage() {
           </div>
         </motion.div>
 
-        {/* Prayer List - Show on both mobile and desktop */}
+        {/* Prayer List */}
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -247,7 +258,7 @@ export default function PrayerTimesPage() {
         </motion.div>
       </div>
 
-      {/* Mobile Settings Modal */}
+      {/* Settings Modal */}
       <AnimatePresence>
         {showSettings && (
           <Settings
@@ -266,4 +277,6 @@ export default function PrayerTimesPage() {
       </AnimatePresence>
     </div>
   );
-} 
+}
+
+export default PrayerTimesPage; 
