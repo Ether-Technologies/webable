@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
 /* Light Theme Variables */
-.theme-light {
+:root {
   --background: #ffffff;
   --foreground: #171717;
   --primary: #059669;
@@ -20,8 +26,8 @@
   --text-on-primary: #ffffff;
 }
 
-/* Dark Theme Variables */
-.theme-dark {
+/* Dark Theme Variables - Using Tailwind's dark mode class */
+:root.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
   --primary: #047857;
@@ -38,19 +44,10 @@
   --text-on-primary: #ffffff;
 }
 
-/* Default to light theme */
-:root {
-  color-scheme: light;
-}
-
 /* System preference based theme */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-  }
-
-  body:not([data-theme]) {
-    @apply theme-dark;
   }
 }
 

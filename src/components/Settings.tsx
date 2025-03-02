@@ -3,9 +3,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { City } from "@/data/prayerTimes";
-import { X, MapPin, Bell, Globe, Volume2, Vibrate } from "lucide-react";
+import { X, MapPin, Bell, Globe, Volume2, Vibrate, Moon } from "lucide-react";
 import { Translation } from "@/data/translations";
 import { AppSettings } from "@/utils/storage";
+import { useTheme } from "@/hooks/useTheme";
 
 interface SettingsProps {
   show: boolean;
@@ -32,6 +33,8 @@ const Settings: React.FC<SettingsProps> = ({
   notifications,
   onNotificationSettingsChange
 }) => {
+  const { theme, toggleTheme } = useTheme();
+
   if (!show) return null;
 
   const languages = [
@@ -126,6 +129,23 @@ const Settings: React.FC<SettingsProps> = ({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="flex justify-between items-center p-3 border-b border-white/20">
+            <div className="flex items-center">
+              <Moon size={18} className="mr-2" />
+              <span>{translations.ui.theme || "Theme"}</span>
+            </div>
+            <div 
+              className={`w-12 h-6 ${theme === 'dark' ? 'bg-primary' : 'bg-gray-600'} rounded-full relative cursor-pointer transition-colors`}
+              onClick={toggleTheme}
+            >
+              <motion.div 
+                className="w-5 h-5 bg-white rounded-full absolute top-0.5"
+                animate={{ right: theme === 'dark' ? '0.5rem' : '2rem' }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </div>
           </div>
 
           <motion.div 
