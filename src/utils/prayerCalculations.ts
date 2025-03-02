@@ -1,5 +1,6 @@
 import { PrayerTimes, Coordinates, CalculationMethod, Madhab } from "adhan";
 import moment from "moment";
+import { getRamadanPrayerTimes, isRamadan } from "./ramadanData";
 
 export type PrayerName = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
@@ -11,6 +12,8 @@ export interface PrayerTimesType {
   asr: string;
   maghrib: string;
   isha: string;
+  sehri: string;
+  iftar: string;
 }
 
 export interface PrayerInfo {
@@ -22,6 +25,13 @@ export interface PrayerInfo {
 }
 
 export const getPrayerTimes = (latitude: number, longitude: number, date: Date = new Date()): PrayerTimesType => {
+  // First check if we're in Ramadan and have specific data
+  const ramadanTimes = getRamadanPrayerTimes(date);
+  if (ramadanTimes) {
+    return ramadanTimes;
+  }
+
+  // If not Ramadan or no Ramadan data available, calculate using adhan library
   const coordinates = new Coordinates(latitude, longitude);
   // Using Hanafi calculation method which is common in Bangladesh
   const params = CalculationMethod.Karachi();
@@ -92,6 +102,11 @@ export const formatTimeRemaining = (duration?: moment.Duration): string => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+// Function to check if today is Ramadan
+export const isRamadanToday = (): boolean => {
+  return isRamadan(new Date());
+};
+
 export const calculatePrayerTimes = (): PrayerTimesType => {
   // This is a placeholder implementation
   // In a real application, this would calculate prayer times based on location and date
@@ -101,6 +116,8 @@ export const calculatePrayerTimes = (): PrayerTimesType => {
     dhuhr: '12:15',
     asr: '16:30',
     maghrib: '18:45',
-    isha: '20:15'
+    isha: '20:15',
+    sehri: '04:05',
+    iftar: '18:45'
   };
 }; 
