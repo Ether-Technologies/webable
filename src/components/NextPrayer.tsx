@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import { PrayerTimesType } from "@/utils/prayerCalculations";
@@ -25,11 +25,17 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
   translations,
   language
 }) => {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!timeRemaining) return null;
 
   const formatNumber = (num: number): string => {
     const formatted = num.toString().padStart(2, '0');
-    return language === 'bn' ? convertToBengaliNumerals(formatted) : formatted;
+    return mounted && language === 'bn' ? convertToBengaliNumerals(formatted) : formatted;
   };
 
   const hours = Math.floor(timeRemaining.asHours());
@@ -60,9 +66,11 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
             <AlertCircle className="text-secondary" size={24} />
           </div>
           <div>
-            <div className="font-medium">{translations.prayerNames[nextPrayer.toLowerCase()]}</div>
+            <div className="font-medium">
+              {mounted ? translations.prayerNames[nextPrayer.toLowerCase()] : nextPrayer}
+            </div>
             <div className="text-sm opacity-80">
-              {formatTime(prayerTimes[nextPrayer.toLowerCase() as keyof PrayerTimesType], language)}
+              {mounted ? formatTime(prayerTimes[nextPrayer.toLowerCase()], language, nextPrayer.toLowerCase()) : prayerTimes[nextPrayer.toLowerCase()]}
             </div>
           </div>
         </div>
@@ -70,7 +78,7 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
         <div className="flex flex-col items-center">
           <div className="text-xs mb-1 flex items-center">
             <AlertCircle size={12} className="mr-1" />
-            <span>{translations.ui.timeRemaining}</span>
+            <span>{mounted ? translations.ui.timeRemaining : "Time Remaining"}</span>
           </div>
           
           <div className="flex items-center justify-center gap-1">
@@ -78,21 +86,27 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(hours)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.hours}</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">
+                {mounted ? translations.ui.hours : "HRS"}
+              </div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(minutes)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.minutes}</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">
+                {mounted ? translations.ui.minutes : "MIN"}
+              </div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(seconds)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.seconds}</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">
+                {mounted ? translations.ui.seconds : "SEC"}
+              </div>
             </div>
           </div>
         </div>

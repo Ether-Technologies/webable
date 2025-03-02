@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Sunrise, Sunset } from "lucide-react";
 import { Translation } from "@/data/translations";
@@ -26,6 +26,12 @@ const CurrentTime: React.FC<CurrentTimeProps> = ({
   isBeforeIftar,
   translations
 }) => {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const mainTime = isBeforeIftar ? iftarTime : sehriTime;
   const secondaryTime = isBeforeIftar ? sehriTime : iftarTime;
   const mainLabel = isBeforeIftar ? translations.prayerNames.iftar : translations.prayerNames.sehri;
@@ -36,6 +42,24 @@ const CurrentTime: React.FC<CurrentTimeProps> = ({
     const timeToEvent = moment(mainTime, "HH:mm").diff(moment(), 'minutes');
     return timeToEvent <= COUNTDOWN_THRESHOLD_MINUTES && timeToEvent > 0;
   }, [mainTime]);
+
+  if (!mounted) {
+    return (
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="flex flex-col items-center py-5"
+      >
+        <div className="flex items-center text-lg text-white mb-1">
+          <MapPin size={16} className="mr-1" />
+          <span>{city}, {country}</span>
+        </div>
+        
+        <div className="h-32" /> {/* Placeholder height */}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div 

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PrayerTimesType } from "@/utils/prayerCalculations";
 import { Sunrise, Sun, Sunset, Moon } from "lucide-react";
 import { Translation } from "@/data/translations";
@@ -25,8 +25,14 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
   translations,
   language
 }) => {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const translatedName = translations.prayerNames[name.toLowerCase()];
-  const formattedTime = formatTime(time, language);
+  const formattedTime = formatTime(time, language, name.toLowerCase());
   
   return (
     <motion.div 
@@ -52,14 +58,16 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
         </div>
         
         <div className="flex flex-col">
-          <div className="text-2xl md:text-3xl font-bold tracking-tight">{translatedName}</div>
+          <div className="text-2xl md:text-3xl font-bold tracking-tight">
+            {mounted ? translatedName : name}
+          </div>
         </div>
         
         <div className="text-right">
           <div className={`text-2xl md:text-3xl font-bold tracking-tight ${
             active ? "text-on-primary" : "text-primary"
           }`}>
-            {formattedTime}
+            {mounted ? formattedTime : time}
           </div>
         </div>
       </div>
@@ -80,6 +88,12 @@ const PrayerList: React.FC<PrayerListProps> = ({
   translations,
   language
 }) => {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const now = moment();
   
   const prayers = [
@@ -107,10 +121,10 @@ const PrayerList: React.FC<PrayerListProps> = ({
     >
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-text-primary tracking-tight">
-          {translations.ui.prayerTimes}
+          {mounted ? translations.ui.prayerTimes : "Prayer Times"}
         </h2>
         <div className="text-base md:text-lg font-medium text-primary bg-primary-light/10 px-4 py-1 rounded-full">
-          {translations.ui.today}
+          {mounted ? translations.ui.today : "Today"}
         </div>
       </div>
       
