@@ -232,53 +232,19 @@ export default function PrayerTimesPage() {
           </div>
         </motion.div>
 
-        {/* Desktop Right Column - Prayer Times */}
+        {/* Prayer List - Show on both mobile and desktop */}
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="hidden lg:block w-full bg-surface-transparent backdrop-blur-md rounded-3xl p-8 shadow-xl"
+          className="w-full"
         >
-          <div className="space-y-8">
-            <div className="bg-primary/5 rounded-2xl p-6">
-              <h2 className="text-3xl font-bold text-text-primary mb-6">
-                {translations[selectedLanguage].ui.prayerTimes}
-              </h2>
-              <div className="grid gap-4">
-                {Object.entries(prayerTimes)
-                  .filter(([key]) => !['sehri', 'iftar'].includes(key))
-                  .map(([prayer, time]) => (
-                    <motion.div 
-                      key={prayer}
-                      className={`bg-surface p-6 rounded-xl shadow-sm hover-card ${
-                        currentPrayerInfo.current === prayer 
-                          ? "bg-primary-gradient text-on-primary" 
-                          : ""
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="text-xl font-bold">
-                          {translations[selectedLanguage].prayerNames[prayer.toLowerCase()]}
-                        </div>
-                        <div className="text-2xl font-bold">
-                          {formatTime(time, selectedLanguage)}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Mobile Prayer List */}
-        <div className="lg:hidden">
           <PrayerList
             prayerTimes={prayerTimes}
             currentPrayer={currentPrayerInfo.current}
             translations={translations[selectedLanguage]}
             language={selectedLanguage}
           />
-        </div>
+        </motion.div>
       </div>
 
       {/* Mobile Settings Modal */}
