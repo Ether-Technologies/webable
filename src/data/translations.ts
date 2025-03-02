@@ -39,7 +39,12 @@ const translations: Translations = {
       vibrationOff: "Vibration Off",
       qiblaDirection: "Qibla Direction",
       saveSettings: "Save Settings",
-      settingsSaved: "Settings saved successfully"
+      settingsSaved: "Settings saved successfully",
+      hours: "HRS",
+      minutes: "MIN",
+      seconds: "SEC",
+      am: "AM",
+      pm: "PM"
     }
   },
   bn: {
@@ -69,7 +74,12 @@ const translations: Translations = {
       vibrationOff: "ভাইব্রেশন বন্ধ",
       qiblaDirection: "কিবলার দিক",
       saveSettings: "সেটিংস সংরক্ষণ করুন",
-      settingsSaved: "সেটিংস সফলভাবে সংরক্ষিত হয়েছে"
+      settingsSaved: "সেটিংস সফলভাবে সংরক্ষিত হয়েছে",
+      hours: "ঘণ্টা",
+      minutes: "মিনিট",
+      seconds: "সেকেন্ড",
+      am: "সকাল",
+      pm: "বিকাল"
     }
   }
 };

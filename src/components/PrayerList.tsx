@@ -33,10 +33,10 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className={`mb-4 p-6 rounded-2xl backdrop-blur-md transition-all duration-300 ${
+      className={`mb-4 p-6 rounded-2xl transition-all duration-300 ${
         active 
           ? "bg-primary-gradient text-on-primary shadow-lg shadow-primary/20" 
-          : "bg-surface-transparent hover:bg-surface text-text-primary"
+          : "bg-surface hover:bg-surface/90 text-text-primary"
       }`}
     >
       <div className="grid grid-cols-[auto,1fr,auto] gap-4 items-center">
@@ -53,9 +53,6 @@ const PrayerItem: React.FC<PrayerItemProps> = ({
         
         <div className="flex flex-col">
           <div className="text-2xl md:text-3xl font-bold tracking-tight">{translatedName}</div>
-          <div className={`text-sm ${active ? "text-on-primary/80" : "text-text-secondary"}`}>
-            {translations.ui.prayerTimes}
-          </div>
         </div>
         
         <div className="text-right">

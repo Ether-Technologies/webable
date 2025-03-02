@@ -1,3 +1,5 @@
+import translations from '@/data/translations';
+
 const bengaliNumerals: { [key: string]: string } = {
   '0': '০',
   '1': '১',
@@ -10,9 +12,7 @@ const bengaliNumerals: { [key: string]: string } = {
   '8': '৮',
   '9': '৯',
   ':': ':',
-  ' ': ' ',
-  'AM': 'এএম',
-  'PM': 'পিএম'
+  ' ': ' '
 };
 
 export const convertToBengaliNumerals = (text: string): string => {
@@ -24,13 +24,13 @@ export const formatTime = (time: string, language: string = 'en'): string => {
   
   // Convert 24h to 12h format
   const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const period = hours >= 12 ? translations[language].ui.pm : translations[language].ui.am;
   const hours12 = hours % 12 || 12;
   const formattedTime = `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
   
   // Convert to Bengali if needed
   if (language === 'bn') {
-    return convertToBengaliNumerals(formattedTime);
+    return convertToBengaliNumerals(formattedTime.replace(period, '')) + ' ' + period;
   }
   
   return formattedTime;

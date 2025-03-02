@@ -34,6 +34,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-geist-sans), Arial, sans-serif;
+  min-height: 100vh;
 }
 
 @layer utilities {
@@ -89,24 +90,84 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* Base container styles */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Responsive container sizes */
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 1024px) {
+  body {
+    background: linear-gradient(
+      135deg,
+      var(--primary-dark) 0%,
+      var(--background) 100%
+    );
+  }
+
+  .max-w-md {
+    position: relative;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Desktop hover effects */
+  .hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* Mobile-first design */
 html,
 body {
   height: 100%;
   width: 100%;
   max-width: 100%;
+  overflow-x: hidden;
 }
 
 .overflow-y-auto {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Desktop responsiveness */
-@media (min-width: 768px) {
-  .max-w-md {
-    max-width: 28rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 1rem;
-  }
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

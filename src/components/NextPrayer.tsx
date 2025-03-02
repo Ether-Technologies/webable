@@ -78,21 +78,21 @@ const NextPrayer: React.FC<NextPrayerProps> = ({
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(hours)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">HRS</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.hours}</div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(minutes)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">MIN</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.minutes}</div>
             </div>
             <div className="text-lg sm:text-xl font-bold">:</div>
             <div className="flex flex-col items-center">
               <div className="bg-primary-dark/70 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold">
                 {formatNumber(seconds)}
               </div>
-              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">SEC</div>
+              <div className="text-[8px] sm:text-[10px] mt-1 opacity-80">{translations.ui.seconds}</div>
             </div>
           </div>
         </div>
