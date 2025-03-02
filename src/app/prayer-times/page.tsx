@@ -8,10 +8,12 @@ import { getPrayerTimes, getCurrentPrayer, PrayerTimesType, PrayerInfo } from "@
 import prayerData from "@/data/prayerTimes";
 import { City } from "@/data/prayerTimes";
 import dynamic from "next/dynamic";
-import { Settings as SettingsIcon, Clock, MapPin } from "lucide-react";
+import { Settings as SettingsIcon } from "lucide-react";
 import translations from "@/data/translations";
+import { loadSettings, saveSettings, AppSettings } from "@/utils/storage";
+import { requestNotificationPermission, scheduleNotification } from "@/utils/notifications";
 
-// Dynamically import components with client-side rendering
+// Dynamically import components
 const Header = dynamic(() => import("@/components/Header"), { ssr: false });
 const CurrentTime = dynamic(() => import("@/components/CurrentTime"), { ssr: false });
 const NextPrayer = dynamic(() => import("@/components/NextPrayer"), { ssr: false });
@@ -22,8 +24,13 @@ const Settings = dynamic(() => import("@/components/Settings"), { ssr: false });
 moment.tz.setDefault("Asia/Dhaka");
 
 export default function PrayerTimesPage() {
-  const [selectedCity, setSelectedCity] = useState<City>(prayerData.cities[0]);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  // Load settings from localStorage
+  const [settings, setSettings] = useState<AppSettings>(loadSettings());
+  const [selectedCity, setSelectedCity] = useState<City>(
+    prayerData.cities.find(c => c.name === settings.city) || prayerData.cities[0]
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState(settings.language);
+  
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesType>({
     fajr: "",
     sunrise: "",
@@ -40,7 +47,21 @@ export default function PrayerTimesPage() {
     isBeforeIftar: true
   });
   const [showSettings, setShowSettings] = useState(false);
-  const [currentTime, setCurrentTime] = useState(moment().format("HH:mm:ss"));
+
+  // Request notification permission on mount
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
+  // Update settings when they change
+  useEffect(() => {
+    saveSettings({
+      city: selectedCity.name,
+      language: selectedLanguage,
+      notifications: settings.notifications,
+      theme: settings.theme
+    });
+  }, [selectedCity.name, selectedLanguage, settings.notifications, settings.theme]);
 
   useEffect(() => {
     const city =
@@ -54,14 +75,35 @@ export default function PrayerTimesPage() {
 
       const prayerInfo = getCurrentPrayer(times);
       setCurrentPrayerInfo(prayerInfo);
-      setCurrentTime(moment().format("HH:mm:ss"));
+
+      // Schedule notifications if enabled
+      if (settings.notifications.enabled) {
+        scheduleNotification(
+          times.sehri,
+          "sehri",
+          translations[selectedLanguage],
+          {
+            sound: settings.notifications.sound,
+            vibration: settings.notifications.vibration
+          }
+        );
+        scheduleNotification(
+          times.iftar,
+          "iftar",
+          translations[selectedLanguage],
+          {
+            sound: settings.notifications.sound,
+            vibration: settings.notifications.vibration
+          }
+        );
+      }
     };
 
     updatePrayerTimes();
     const timer = setInterval(updatePrayerTimes, 1000);
 
     return () => clearInterval(timer);
-  }, [selectedCity.name]);
+  }, [selectedCity.name, settings.notifications, selectedLanguage]);
 
   const handleCityChange = (cityName: string) => {
     const city = prayerData.cities.find((c) => c.name === cityName);
@@ -72,6 +114,13 @@ export default function PrayerTimesPage() {
 
   const handleLanguageChange = (language: string) => {
     setSelectedLanguage(language);
+  };
+
+  const handleNotificationSettingsChange = (notificationSettings: AppSettings['notifications']) => {
+    setSettings(prev => ({
+      ...prev,
+      notifications: notificationSettings
+    }));
   };
 
   return (
@@ -133,6 +182,8 @@ export default function PrayerTimesPage() {
               selectedLanguage={selectedLanguage}
               onLanguageChange={handleLanguageChange}
               translations={translations[selectedLanguage]}
+              notifications={settings.notifications}
+              onNotificationSettingsChange={handleNotificationSettingsChange}
             />
           )}
         </AnimatePresence>

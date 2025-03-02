@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { City } from "@/data/prayerTimes";
-import { X, MapPin, Bell, Globe } from "lucide-react";
+import { X, MapPin, Bell, Globe, Volume2, Vibrate } from "lucide-react";
 import { Translation } from "@/data/translations";
+import { AppSettings } from "@/utils/storage";
 
 interface SettingsProps {
   show: boolean;
@@ -15,6 +16,8 @@ interface SettingsProps {
   selectedLanguage: string;
   onLanguageChange: (language: string) => void;
   translations: Translation;
+  notifications: AppSettings['notifications'];
+  onNotificationSettingsChange: (settings: AppSettings['notifications']) => void;
 }
 
 const Settings: React.FC<SettingsProps> = ({
@@ -25,7 +28,9 @@ const Settings: React.FC<SettingsProps> = ({
   onCityChange,
   selectedLanguage,
   onLanguageChange,
-  translations
+  translations,
+  notifications,
+  onNotificationSettingsChange
 }) => {
   if (!show) return null;
 
@@ -33,6 +38,27 @@ const Settings: React.FC<SettingsProps> = ({
     { code: "en", name: "English" },
     { code: "bn", name: "বাংলা" }
   ];
+
+  const toggleNotification = () => {
+    onNotificationSettingsChange({
+      ...notifications,
+      enabled: !notifications.enabled
+    });
+  };
+
+  const toggleSound = () => {
+    onNotificationSettingsChange({
+      ...notifications,
+      sound: !notifications.sound
+    });
+  };
+
+  const toggleVibration = () => {
+    onNotificationSettingsChange({
+      ...notifications,
+      vibration: !notifications.vibration
+    });
+  };
 
   return (
     <motion.div
@@ -110,14 +136,63 @@ const Settings: React.FC<SettingsProps> = ({
               <Bell size={18} className="mr-2" />
               <span>{translations.ui.notifications}</span>
             </div>
-            <div className="w-12 h-6 bg-emerald-700 rounded-full relative cursor-pointer">
+            <div 
+              className={`w-12 h-6 ${notifications.enabled ? 'bg-emerald-600' : 'bg-gray-600'} rounded-full relative cursor-pointer transition-colors`}
+              onClick={toggleNotification}
+            >
               <motion.div 
-                className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                className="w-5 h-5 bg-white rounded-full absolute top-0.5"
+                animate={{ right: notifications.enabled ? '0.5rem' : '2rem' }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             </div>
           </motion.div>
+
+          {notifications.enabled && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-between items-center p-3 border-b border-white/20"
+              >
+                <div className="flex items-center">
+                  <Volume2 size={18} className="mr-2" />
+                  <span>{translations.ui[notifications.sound ? 'soundOn' : 'soundOff']}</span>
+                </div>
+                <div 
+                  className={`w-12 h-6 ${notifications.sound ? 'bg-emerald-600' : 'bg-gray-600'} rounded-full relative cursor-pointer transition-colors`}
+                  onClick={toggleSound}
+                >
+                  <motion.div 
+                    className="w-5 h-5 bg-white rounded-full absolute top-0.5"
+                    animate={{ right: notifications.sound ? '0.5rem' : '2rem' }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-between items-center p-3 border-b border-white/20"
+              >
+                <div className="flex items-center">
+                  <Vibrate size={18} className="mr-2" />
+                  <span>{translations.ui[notifications.vibration ? 'vibrationOn' : 'vibrationOff']}</span>
+                </div>
+                <div 
+                  className={`w-12 h-6 ${notifications.vibration ? 'bg-emerald-600' : 'bg-gray-600'} rounded-full relative cursor-pointer transition-colors`}
+                  onClick={toggleVibration}
+                >
+                  <motion.div 
+                    className="w-5 h-5 bg-white rounded-full absolute top-0.5"
+                    animate={{ right: notifications.vibration ? '0.5rem' : '2rem' }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+              </motion.div>
+            </>
+          )}
         </motion.div>
       </motion.div>
     </motion.div>

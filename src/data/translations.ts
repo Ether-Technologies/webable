@@ -30,7 +30,16 @@ const translations: Translations = {
       city: "City",
       language: "Language",
       notifications: "Notifications",
-      today: "Today"
+      today: "Today",
+      untilEvent: "Until {event}",
+      notifyBefore: "Notify before {event}",
+      soundOn: "Sound On",
+      soundOff: "Sound Off",
+      vibrationOn: "Vibration On",
+      vibrationOff: "Vibration Off",
+      qiblaDirection: "Qibla Direction",
+      saveSettings: "Save Settings",
+      settingsSaved: "Settings saved successfully"
     }
   },
   bn: {
@@ -51,7 +60,16 @@ const translations: Translations = {
       city: "শহর",
       language: "ভাষা",
       notifications: "নোটিফিকেশন",
-      today: "আজ"
+      today: "আজ",
+      untilEvent: "{event} এর জন্য বাকি",
+      notifyBefore: "{event} এর আগে নোটিফিকেশন",
+      soundOn: "শব্দ চালু",
+      soundOff: "শব্দ বন্ধ",
+      vibrationOn: "ভাইব্রেশন চালু",
+      vibrationOff: "ভাইব্রেশন বন্ধ",
+      qiblaDirection: "কিবলার দিক",
+      saveSettings: "সেটিংস সংরক্ষণ করুন",
+      settingsSaved: "সেটিংস সফলভাবে সংরক্ষিত হয়েছে"
     }
   }
 };
