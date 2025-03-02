@@ -14,34 +14,34 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "EtherTech Prayer Times",
+  title: "NeoShift Prayer Times",
   description: "Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers with precise calculations based on your location.",
   keywords: ["prayer times", "islamic prayer", "salah times", "muslim prayer schedule", "prayer calculator", "islamic worship"],
-  authors: [{ name: "EtherTech" }],
-  creator: "EtherTech",
-  publisher: "EtherTech",
-  applicationName: "EtherTech Prayer Times",
+  authors: [{ name: "NeoShift" }],
+  creator: "NeoShift",
+  publisher: "NeoShift",
+  applicationName: "NeoShift Prayer Times",
   generator: "Next.js",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://prayer.ethertech.io'),
+  metadataBase: new URL('https://prayer.neoshift.io'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "EtherTech Prayer Times",
+    title: "NeoShift Prayer Times",
     description: "Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers.",
-    url: 'https://prayer.ethertech.io',
-    siteName: 'EtherTech Prayer Times',
+    url: 'https://prayer.neoshift.io',
+    siteName: 'NeoShift Prayer Times',
     images: [
       {
         url: '/cover.png',
         width: 1200,
         height: 630,
-        alt: 'EtherTech Prayer Times App Preview',
+        alt: 'NeoShift Prayer Times App Preview',
       },
     ],
     locale: 'en_US',
@@ -49,11 +49,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EtherTech Prayer Times',
+    title: 'NeoShift Prayer Times',
     description: 'Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers.',
     images: ['/cover.png'],
-    creator: '@ethertech',
-    site: '@ethertech',
+    creator: '@neoshift',
+    site: '@neoshift',
   },
   robots: {
     index: true,
