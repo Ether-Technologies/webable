@@ -191,7 +191,7 @@ export default function PrayerTimesPage() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full max-w-md mx-auto lg:max-w-none lg:w-full flex flex-col bg-primary relative rounded-3xl overflow-hidden shadow-2xl"
+          className="w-full flex flex-col bg-primary relative rounded-3xl overflow-hidden shadow-2xl"
         >
           <div className="absolute inset-0 overflow-hidden">
             <motion.div 
@@ -209,10 +209,8 @@ export default function PrayerTimesPage() {
           </div>
           
           <div className="relative z-10 flex-1 flex flex-col">
-            {/* Only show Header with settings on mobile */}
-            <div className="lg:hidden">
-              <Header onSettingsClick={() => setShowSettings(true)} />
-            </div>
+            {/* Show Header on both mobile and desktop */}
+            <Header onSettingsClick={() => setShowSettings(true)} />
 
             <CurrentTime
               city={selectedCity.name}
@@ -267,31 +265,6 @@ export default function PrayerTimesPage() {
                       </div>
                     </motion.div>
                   ))}
-              </div>
-            </div>
-
-            {/* Quick Settings - Only visible on desktop */}
-            <div className="bg-primary/5 rounded-2xl p-6">
-              <div className="flex items-center gap-4">
-                <select
-                  value={selectedCity.name}
-                  onChange={(e) => handleCityChange(e.target.value)}
-                  className="flex-1 p-3 rounded-xl bg-surface text-text-primary border border-primary/20"
-                >
-                  {prayerData.cities.map((city) => (
-                    <option key={city.name} value={city.name}>
-                      {city.name}, {city.country}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="w-32 p-3 rounded-xl bg-surface text-text-primary border border-primary/20"
-                >
-                  <option value="en">English</option>
-                  <option value="bn">বাংলা</option>
-                </select>
               </div>
             </div>
           </div>

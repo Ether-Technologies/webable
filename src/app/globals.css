@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* Light Theme Variables */
+.theme-light {
   --background: #ffffff;
   --foreground: #171717;
   --primary: #059669;
@@ -19,14 +20,37 @@
   --text-on-primary: #ffffff;
 }
 
+/* Dark Theme Variables */
+.theme-dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --primary: #047857;
+  --primary-light: #059669;
+  --primary-dark: #065f46;
+  --primary-transparent: rgba(4, 120, 87, 0.9);
+  --secondary: #fcb813;
+  --secondary-light: #fdc533;
+  --secondary-dark: #e6a50c;
+  --surface: #1f2937;
+  --surface-transparent: rgba(31, 41, 55, 0.9);
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-on-primary: #ffffff;
+}
+
+/* Default to light theme */
+:root {
+  color-scheme: light;
+}
+
+/* System preference based theme */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --surface: #1f2937;
-    --surface-transparent: rgba(31, 41, 55, 0.9);
-    --text-primary: #ffffff;
-    --text-secondary: #9ca3af;
+    color-scheme: dark;
+  }
+
+  body:not([data-theme]) {
+    @apply theme-dark;
   }
 }
 
