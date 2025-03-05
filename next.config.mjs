@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["prayer.ethertech.io"],
+    domains: [
+      "prayer.ethertech.io",
+      "world.openfoodfacts.org",
+      "scanbot.io",
+      "go-upc.s3.amazonaws.com",
+    ],
   },
   compress: true,
   poweredByHeader: false,

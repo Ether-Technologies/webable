@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { clientConfig } from "@/config/client";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,34 +15,34 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "EtherTech Prayer Times",
-  description: "Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers with precise calculations based on your location.",
-  keywords: ["prayer times", "islamic prayer", "salah times", "muslim prayer schedule", "prayer calculator", "islamic worship"],
-  authors: [{ name: "EtherTech" }],
-  creator: "EtherTech",
-  publisher: "EtherTech",
-  applicationName: "EtherTech Prayer Times",
+  title: clientConfig.name,
+  description: clientConfig.description,
+  keywords: ["barcode scanner", "product lookup", "product information", "barcode reader", "product scanner", "inventory management"],
+  authors: [{ name: clientConfig.name.split(" ")[0] }],
+  creator: clientConfig.name.split(" ")[0],
+  publisher: clientConfig.name.split(" ")[0],
+  applicationName: clientConfig.name,
   generator: "Next.js",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://prayer.ethertech.io'),
+  metadataBase: new URL(clientConfig.url),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "EtherTech Prayer Times",
-    description: "Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers.",
-    url: 'https://prayer.ethertech.io',
-    siteName: 'EtherTech Prayer Times',
+    title: clientConfig.name,
+    description: clientConfig.description,
+    url: clientConfig.url,
+    siteName: clientConfig.name,
     images: [
       {
         url: '/cover.png',
         width: 1200,
         height: 630,
-        alt: 'EtherTech Prayer Times App Preview',
+        alt: `${clientConfig.name} App Preview`,
       },
     ],
     locale: 'en_US',
@@ -49,11 +50,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EtherTech Prayer Times',
-    description: 'Stay connected with accurate prayer times. Get real-time updates for Fajr, Dhuhr, Asr, Maghrib, and Isha prayers.',
+    title: clientConfig.name,
+    description: clientConfig.description,
     images: ['/cover.png'],
-    creator: '@ethertech',
-    site: '@ethertech',
+    creator: clientConfig.twitter,
+    site: clientConfig.twitter,
   },
   robots: {
     index: true,
@@ -72,7 +73,7 @@ export const metadata: Metadata = {
     maximumScale: 5,
   },
   verification: {
-    google: 'your-google-site-verification', // Add your Google verification code
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
   },
   category: 'technology',
   icons: {
@@ -87,7 +88,8 @@ export const metadata: Metadata = {
     other: [
       { url: '/favicon/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }
     ]
-  }
+  },
+  themeColor: clientConfig.themeColor,
 };
 
 export default function RootLayout({
