@@ -17,7 +17,8 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick }) => {
         animate={{ x: 0, opacity: 1 }}
       >
         <Image
-          src="/Logo.svg"
+          // src="/Logo.svg"
+          src={`/Logo-${process.env.NEXT_PUBLIC_CLIENT}.svg`}
           alt="Logo"
         width={150}
           height={100}
