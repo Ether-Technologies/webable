@@ -21,7 +21,7 @@ const defaultSettings: AppSettings = {
     vibration: true,
     notifyBeforeMinutes: 5
   },
-  theme: 'default'
+  theme: 'dark'
 };
 
 export const loadSettings = (): AppSettings => {

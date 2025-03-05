@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light Theme Variables */
+/* Light Theme Variables - Keeping for reference but not using */
 .theme-light {
   --background: #ffffff;
   --foreground: #171717;
@@ -20,8 +20,8 @@
   --text-on-primary: #ffffff;
 }
 
-/* Dark Theme Variables */
-.theme-dark {
+/* Dark Theme Variables - Always applied */
+:root {
   --background: #0a0a0a;
   --foreground: #ededed;
   --primary: #047857;
@@ -36,22 +36,7 @@
   --text-primary: #ffffff;
   --text-secondary: #9ca3af;
   --text-on-primary: #ffffff;
-}
-
-/* Default to light theme */
-:root {
-  color-scheme: light;
-}
-
-/* System preference based theme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
-
-  body:not([data-theme]) {
-    @apply theme-dark;
-  }
+  color-scheme: dark;
 }
 
 body {
